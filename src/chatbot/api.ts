@@ -133,6 +133,71 @@ export async function fetchChatbotConfig(
 }
 
 /**
+ * Retrieve persistent conversation and messages for visitor session
+ */
+export async function fetchSessionData(
+  sessionId: string,
+  domain: string,
+  backendUrl: string = DEFAULT_BACKEND_URL
+): Promise<{ conversation: any; messages: any[] }> {
+  const cleanBackend = backendUrl.replace(/\/+$/, "");
+  try {
+    const res = await fetch(`${cleanBackend}/api/chat/session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-org-domain": domain,
+        "x-session-id": sessionId,
+      },
+      body: JSON.stringify({ session_id: sessionId, domain }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        return {
+          conversation: data.conversation,
+          messages: Array.isArray(data.messages) ? data.messages : [],
+        };
+      }
+    }
+  } catch {
+    // Non-fatal
+  }
+  return { conversation: null, messages: [] };
+}
+
+/**
+ * Fetch messages for a specific conversation ID
+ */
+export async function fetchConversationMessages(
+  conversationId: string,
+  sessionId: string,
+  domain: string,
+  backendUrl: string = DEFAULT_BACKEND_URL
+): Promise<any[]> {
+  const cleanBackend = backendUrl.replace(/\/+$/, "");
+  try {
+    const res = await fetch(`${cleanBackend}/api/chat/conversations/${encodeURIComponent(conversationId)}/messages?session_id=${encodeURIComponent(sessionId)}`, {
+      headers: {
+        Accept: "application/json",
+        "x-org-domain": domain,
+        "x-session-id": sessionId,
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+    }
+  } catch {
+    // Non-fatal
+  }
+  return [];
+}
+
+/**
  * Send conversational message to backend.traveally.com
  */
 export async function sendChatToBackend(params: {
@@ -146,7 +211,7 @@ export async function sendChatToBackend(params: {
     email?: string;
     phone?: string;
   };
-}): Promise<{ reply: string; metadata?: ChatMessageMetadata }> {
+}): Promise<{ reply: string | null; conversationId?: string; metadata?: ChatMessageMetadata }> {
   const { text, sessionId, domain, backendUrl = DEFAULT_BACKEND_URL, customerToken, traveler } = params;
   const cleanBackend = backendUrl.replace(/\/+$/, "");
 
@@ -185,16 +250,18 @@ export async function sendChatToBackend(params: {
 
     if (response.ok) {
       const data = await response.json();
-      if (data && data.reply) {
+      if (data && data.success) {
         return {
-          reply: data.reply,
+          reply: data.reply || null,
+          conversationId: data.conversation_id,
           metadata: data.metadata,
         };
       }
-      if (data && data.data && data.data.text) {
+      if (data && data.reply) {
         return {
-          reply: data.data.text,
-          metadata: data.data.metadata,
+          reply: data.reply,
+          conversationId: data.conversation_id,
+          metadata: data.metadata,
         };
       }
     }

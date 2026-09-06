@@ -5,7 +5,7 @@ import "../src/chatbot/chatbot.css";
 
 function DemoApp() {
   const [domain, setDomain] = useState("travelyaan.com");
-  const [primaryColor, setPrimaryColor] = useState("#00B4BA");
+  const [primaryColor, setPrimaryColor] = useState("#022247");
   const [secondaryColor, setSecondaryColor] = useState("#011531");
   const [mode, setMode] = useState<"light" | "dark">("light");
   const [variant, setVariant] = useState<"floating" | "inline">("floating");
@@ -15,7 +15,7 @@ function DemoApp() {
     primaryColor,
     secondaryColor,
     mode,
-    borderRadius: "18px",
+    borderRadius: "16px",
   };
 
   return (
@@ -25,9 +25,9 @@ function DemoApp() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span style={{ fontSize: "28px" }}>🚀</span>
             <div>
-              <h1 style={{ margin: 0, fontSize: "24px" }}>@traveally/chatbot Library Playground</h1>
+              <h1 style={{ margin: 0, fontSize: "24px" }}>@traveally/react Interactive Playground</h1>
               <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "14px" }}>
-                Connected to <code>https://backend.traveally.com</code> • Config-Based Theme & Dynamic Backend Logo Resolution
+                Connected to <code>https://backend.traveally.com</code> • Real-time branding resolution & concierge testing
               </p>
             </div>
           </div>

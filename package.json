@@ -1,6 +1,6 @@
 {
   "name": "@traveally/react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets and APIs.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -75,6 +75,7 @@
     "vite-plugin-dts": "^4.5.3"
   },
   "dependencies": {
-    "lucide-react": "^0.554.0"
+    "lucide-react": "^0.554.0",
+    "socket.io-client": "^4.8.3"
   }
 }

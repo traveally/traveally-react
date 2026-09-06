@@ -70,7 +70,7 @@ export interface ChatMessageMetadata {
 
 export interface ChatMessage {
   id: string;
-  sender: "bot" | "user" | "system";
+  sender: "bot" | "user" | "agent" | "system";
   text: string;
   senderName?: string;
   avatarUrl?: string;
@@ -114,6 +114,13 @@ export interface TraveallyChatbotConfig {
    * If not provided, dynamically fetched from backend.traveally.com/api/dashboard/public/resolve/:domain.
    */
   logoUrl?: string;
+
+  /**
+   * Short logo / icon / monogram URL for avatar badges and headers.
+   * Automatically defaults to backend resolved icon.
+   */
+  iconUrl?: string;
+  shortLogoUrl?: string;
 
   /**
    * Bot avatar URL override.
@@ -218,12 +225,16 @@ export interface ChatbotContextValue {
   toggle: () => void;
   messages: ChatMessage[];
   sendMessage: (text: string) => Promise<void>;
+  sendTyping: (isTyping: boolean) => void;
   clearMessages: () => void;
   isLoading: boolean;
   isTyping: boolean;
+  isAgentTyping: boolean;
+  activeAgentName?: string;
   branding: OrganizationBranding | null;
   config: TraveallyChatbotConfig;
   sessionId: string;
+  conversationId?: string;
   activeError: string | null;
   clearError: () => void;
   isLeadFormNeeded: boolean;

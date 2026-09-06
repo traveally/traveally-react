@@ -6,6 +6,8 @@ import { Bot, User, ExternalLink, Compass } from "lucide-react";
 interface MessageListProps {
   messages: ChatMessage[];
   isTyping: boolean;
+  isAgentTyping?: boolean;
+  activeAgentName?: string;
   botAvatar?: string | null;
   botName?: string;
 }
@@ -13,6 +15,8 @@ interface MessageListProps {
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
   isTyping,
+  isAgentTyping,
+  activeAgentName,
   botAvatar,
   botName = "Assistant",
 }) => {
@@ -20,7 +24,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isAgentTyping]);
 
   const formatTime = (isoString: string) => {
     try {
@@ -59,14 +63,15 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <div className="traveally-cb-body" role="log" aria-live="polite">
       {messages.map((msg) => {
-        const isBot = msg.sender === "bot";
+        const isBotOrAgent = msg.sender === "bot" || msg.sender === "agent" || msg.sender === "system";
+        const isAgent = msg.sender === "agent";
 
         return (
-          <div key={msg.id} className={`traveally-cb-msg-row ${isBot ? "bot" : "user"}`}>
+          <div key={msg.id} className={`traveally-cb-msg-row ${isBotOrAgent ? "bot" : "user"}`}>
             <div className="traveally-cb-avatar-bubble">
-              {isBot ? (
+              {isBotOrAgent ? (
                 botAvatar ? (
-                  <img src={botAvatar} alt={botName} />
+                  <img src={botAvatar} alt={msg.senderName || botName} />
                 ) : (
                   <Bot size={16} />
                 )
@@ -76,6 +81,11 @@ export const MessageList: React.FC<MessageListProps> = ({
             </div>
 
             <div className="traveally-cb-bubble-content">
+              {isAgent && msg.senderName && (
+                <div style={{ fontSize: "11px", fontWeight: 600, color: "var(--traveally-cb-primary)", marginBottom: "2px", marginLeft: "2px" }}>
+                  {msg.senderName}
+                </div>
+              )}
               <div className="traveally-cb-bubble">{renderFormattedText(msg.text)}</div>
 
               {/* Optional Rich Metadata Card */}
@@ -117,15 +127,20 @@ export const MessageList: React.FC<MessageListProps> = ({
         );
       })}
 
-      {isTyping && (
+      {(isTyping || isAgentTyping) && (
         <div className="traveally-cb-msg-row bot">
           <div className="traveally-cb-avatar-bubble">
             {botAvatar ? <img src={botAvatar} alt={botName} /> : <Bot size={16} />}
           </div>
-          <div className="traveally-cb-typing">
-            <span className="traveally-cb-typing-dot" />
-            <span className="traveally-cb-typing-dot" />
-            <span className="traveally-cb-typing-dot" />
+          <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+            <span style={{ fontSize: "11px", color: "var(--traveally-cb-text-muted, #64748b)", marginLeft: "4px" }}>
+              {isAgentTyping ? `${activeAgentName || "Travel Specialist"} is typing...` : `${botName} is typing...`}
+            </span>
+            <div className="traveally-cb-typing">
+              <span className="traveally-cb-typing-dot" />
+              <span className="traveally-cb-typing-dot" />
+              <span className="traveally-cb-typing-dot" />
+            </div>
           </div>
         </div>
       )}

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { FormField } from "./types";
-import { MessageSquare, ArrowRight, ShieldCheck, User } from "lucide-react";
+import { MessageSquare, ArrowRight } from "lucide-react";
 
 interface LeadFormProps {
   fields: FormField[];
   title?: string;
   subtitle?: string;
   botName?: string;
+  icon?: string | null;
   primaryColor?: string;
   onSubmit: (data: Record<string, string>) => void;
   isLoading?: boolean;
@@ -14,10 +15,11 @@ interface LeadFormProps {
 
 export const LeadForm: React.FC<LeadFormProps> = ({
   fields,
-  title = "Start a Conversation",
-  subtitle = "Please introduce yourself so our travel team can best assist you.",
-  botName = "Traveally Assistant",
-  primaryColor = "#00B4BA",
+  title,
+  subtitle,
+  botName = "Travel Concierge",
+  icon = null,
+  primaryColor = "#022247",
   onSubmit,
   isLoading = false,
 }) => {
@@ -61,35 +63,23 @@ export const LeadForm: React.FC<LeadFormProps> = ({
   };
 
   return (
-    <div className="traveally-cb-leadform-wrap" style={{ padding: "20px 18px", display: "flex", flexDirection: "column", height: "100%", boxSizing: "border-box" }}>
-      <div style={{ textAlign: "center", marginBottom: "18px" }}>
-        <div
-          style={{
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            background: "var(--traveally-cb-bot-bubble, #f1f5f9)",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: primaryColor,
-            marginBottom: "10px",
-          }}
-        >
-          <MessageSquare size={22} />
-        </div>
-        <h3 style={{ margin: "0 0 4px 0", fontSize: "16px", fontWeight: 700, color: "var(--traveally-cb-text)" }}>
-          {title}
-        </h3>
-        <p style={{ margin: 0, fontSize: "12.5px", color: "var(--traveally-cb-text-muted)", lineHeight: 1.4 }}>
-          {subtitle}
-        </p>
-      </div>
-
+    <div
+      className="traveally-cb-leadform-wrap"
+      style={{
+        padding: "18px 18px 10px 18px",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
+        overflowY: "auto",
+        boxSizing: "border-box",
+        background: "#ffffff",
+      }}
+    >
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px", flex: 1 }}>
         {activeFields.map((field) => (
-          <div key={field.id} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--traveally-cb-text)" }}>
+          <div key={field.id} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--traveally-cb-text, #1e293b)" }}>
               {field.label} {field.required && <span style={{ color: "#ef4444" }}>*</span>}
             </label>
             <input
@@ -99,15 +89,16 @@ export const LeadForm: React.FC<LeadFormProps> = ({
               onChange={(e) => handleChange(field.id, e.target.value)}
               disabled={isLoading}
               style={{
-                padding: "9px 12px",
+                padding: "10px 13px",
                 borderRadius: "8px",
-                border: errors[field.id] ? "1px solid #ef4444" : "1px solid var(--traveally-cb-border, #cbd5e1)",
-                background: "var(--traveally-cb-bg, #ffffff)",
+                border: errors[field.id] ? "1.5px solid #ef4444" : "1px solid #e2e8f0",
+                background: "#ffffff",
                 fontSize: "13px",
-                color: "var(--traveally-cb-text)",
+                color: "#1e293b",
                 outline: "none",
                 boxSizing: "border-box",
                 width: "100%",
+                transition: "border-color 0.15s ease, box-shadow 0.15s ease",
               }}
             />
             {errors[field.id] && (
@@ -122,39 +113,31 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             disabled={isLoading}
             style={{
               width: "100%",
-              padding: "11px 16px",
+              padding: "12px 18px",
               borderRadius: "10px",
-              background: "var(--traveally-cb-primary-gradient, #00b4ba)",
+              background: "var(--traveally-cb-primary, #022247)",
               color: "#ffffff",
               border: "none",
-              fontSize: "13.5px",
+              fontSize: "14px",
               fontWeight: 600,
               cursor: isLoading ? "not-allowed" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "8px",
-              boxShadow: "0 4px 12px rgba(0, 180, 186, 0.3)",
-              transition: "opacity 0.2s",
+              boxShadow: "0 4px 14px rgba(2, 34, 71, 0.2)",
+              transition: "opacity 0.2s, transform 0.1s",
             }}
           >
             <span>{isLoading ? "Connecting..." : "Start Chatting"}</span>
             {!isLoading && <ArrowRight size={15} />}
           </button>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              fontSize: "11px",
-              color: "var(--traveally-cb-text-muted)",
-              marginTop: "10px",
-            }}
-          >
-            <ShieldCheck size={13} style={{ color: "#22c55e" }} />
-            <span>Direct agent response • Your details are private</span>
+          <div className="traveally-cb-powered-by">
+            <span>Powered by </span>
+            <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
+              traveally.com
+            </a>
           </div>
         </div>
       </form>

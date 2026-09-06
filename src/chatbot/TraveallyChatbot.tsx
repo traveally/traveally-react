@@ -1,4 +1,4 @@
-import React, { useState, useMemo, CSSProperties } from "react";
+import React, { useState, useMemo, useRef, CSSProperties } from "react";
 import { TraveallyChatbotConfig, QuickPrompt } from "./types";
 import { TraveallyChatbotProvider, useTraveallyChatbot } from "./ChatbotContext";
 import { MessageList } from "./MessageList";
@@ -23,8 +23,11 @@ const ChatbotInnerView: React.FC = () => {
     close,
     messages,
     sendMessage,
+    sendTyping,
     clearMessages,
     isTyping,
+    isAgentTyping,
+    activeAgentName,
     isLoading,
     branding,
     config,
@@ -36,6 +39,17 @@ const ChatbotInnerView: React.FC = () => {
   } = useTraveallyChatbot();
 
   const [inputVal, setInputVal] = useState("");
+  const typingTimerRef = useRef<any>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setInputVal(val);
+    sendTyping(true);
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => {
+      sendTyping(false);
+    }, 2000);
+  };
 
   const theme = config.theme || {};
   const position = config.position || "bottom-right";
@@ -82,10 +96,11 @@ const ChatbotInnerView: React.FC = () => {
     return style as CSSProperties;
   }, [theme]);
 
-  // Dynamic logo resolution: User override > Backend resolved logo > Fallback icon
-  const resolvedLogo = config.logoUrl || branding?.logo || null;
-  const resolvedTitle = config.title || branding?.name || "Traveally Assistant";
-  const resolvedSubtitle = config.subtitle || "AI Travel Concierge • Online";
+  // Dynamic short logo & full logo resolution: User override > Backend resolved icon > Fallback
+  const resolvedShortLogo = config.iconUrl || branding?.icon || config.logoUrl || branding?.logo || null;
+  const resolvedLogo = config.logoUrl || branding?.logo || resolvedShortLogo;
+  const resolvedTitle = config.title || branding?.name || "Travel Concierge";
+  const resolvedSubtitle = config.subtitle || "Travel Concierge • Online";
 
   const quickPrompts = config.quickPrompts || DEFAULT_PROMPTS;
 
@@ -136,10 +151,10 @@ const ChatbotInnerView: React.FC = () => {
               <div className="traveally-cb-header">
                 <div className="traveally-cb-header-left">
                   <div className="traveally-cb-logo-wrap">
-                    {resolvedLogo ? (
-                      <img src={resolvedLogo} alt={resolvedTitle} className="traveally-cb-logo-img" />
+                    {resolvedShortLogo ? (
+                      <img src={resolvedShortLogo} alt={resolvedTitle} className="traveally-cb-logo-img" />
                     ) : (
-                      <Bot size={22} style={{ color: "var(--traveally-cb-secondary)" }} />
+                      <MessageSquare size={20} style={{ color: "var(--traveally-cb-secondary)" }} />
                     )}
                   </div>
                   <div className="traveally-cb-header-titles">
@@ -176,9 +191,7 @@ const ChatbotInnerView: React.FC = () => {
               {isLeadFormNeeded ? (
                 <LeadForm
                   fields={formFields}
-                  title={`Chat with ${resolvedTitle}`}
-                  botName={resolvedTitle}
-                  primaryColor={theme.primaryColor || "#00B4BA"}
+                  primaryColor={theme.primaryColor || "#022247"}
                   onSubmit={submitLead}
                   isLoading={isLoading}
                 />
@@ -188,7 +201,9 @@ const ChatbotInnerView: React.FC = () => {
                   <MessageList
                     messages={messages}
                     isTyping={isTyping}
-                    botAvatar={resolvedLogo}
+                    isAgentTyping={isAgentTyping}
+                    activeAgentName={activeAgentName}
+                    botAvatar={resolvedShortLogo || resolvedLogo}
                     botName={resolvedTitle}
                   />
 
@@ -221,9 +236,9 @@ const ChatbotInnerView: React.FC = () => {
                       <input
                         type="text"
                         className="traveally-cb-input"
-                        placeholder="Ask about tours, flights, quotes..."
+                        placeholder="Ask about tours, flights, custom itineraries..."
                         value={inputVal}
-                        onChange={(e) => setInputVal(e.target.value)}
+                        onChange={handleInputChange}
                         disabled={isLoading}
                         maxLength={1000}
                         aria-label="Chat message"
@@ -238,8 +253,11 @@ const ChatbotInnerView: React.FC = () => {
                       </button>
                     </form>
 
-                    <div className="traveally-cb-powered">
-                      Powered by <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">Traveally</a>
+                    <div className="traveally-cb-powered-by">
+                      <span>Powered by </span>
+                      <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
+                        traveally.com
+                      </a>
                     </div>
                   </div>
                 </>
@@ -253,12 +271,10 @@ const ChatbotInnerView: React.FC = () => {
             className="traveally-cb-launcher-btn"
             onClick={toggle}
             aria-label={isOpen ? "Close Chat" : "Open Chat"}
-            title="Chat with Travel Concierge"
+            title={`Chat with ${resolvedTitle}`}
           >
             {isOpen ? (
-              <X size={26} />
-            ) : resolvedLogo ? (
-              <img src={resolvedLogo} alt="Chat" className="traveally-cb-launcher-avatar" />
+              <X size={24} />
             ) : (
               <MessageSquare size={26} />
             )}
@@ -274,10 +290,10 @@ const ChatbotInnerView: React.FC = () => {
           <div className="traveally-cb-header">
             <div className="traveally-cb-header-left">
               <div className="traveally-cb-logo-wrap">
-                {resolvedLogo ? (
-                  <img src={resolvedLogo} alt={resolvedTitle} className="traveally-cb-logo-img" />
+                {resolvedShortLogo ? (
+                  <img src={resolvedShortLogo} alt={resolvedTitle} className="traveally-cb-logo-img" />
                 ) : (
-                  <Bot size={22} style={{ color: "var(--traveally-cb-secondary)" }} />
+                  <MessageSquare size={20} style={{ color: "var(--traveally-cb-secondary)" }} />
                 )}
               </div>
               <div className="traveally-cb-header-titles">
@@ -305,9 +321,7 @@ const ChatbotInnerView: React.FC = () => {
           {isLeadFormNeeded ? (
             <LeadForm
               fields={formFields}
-              title={`Chat with ${resolvedTitle}`}
-              botName={resolvedTitle}
-              primaryColor={theme.primaryColor || "#00B4BA"}
+              primaryColor={theme.primaryColor || "#022247"}
               onSubmit={submitLead}
               isLoading={isLoading}
             />
@@ -317,7 +331,9 @@ const ChatbotInnerView: React.FC = () => {
               <MessageList
                 messages={messages}
                 isTyping={isTyping}
-                botAvatar={resolvedLogo}
+                isAgentTyping={isAgentTyping}
+                activeAgentName={activeAgentName}
+                botAvatar={resolvedShortLogo || resolvedLogo}
                 botName={resolvedTitle}
               />
 
@@ -350,9 +366,9 @@ const ChatbotInnerView: React.FC = () => {
                   <input
                     type="text"
                     className="traveally-cb-input"
-                    placeholder="Ask about tours, flights, quotes..."
+                    placeholder="Ask about tours, flights, custom itineraries..."
                     value={inputVal}
-                    onChange={(e) => setInputVal(e.target.value)}
+                    onChange={handleInputChange}
                     disabled={isLoading}
                     maxLength={1000}
                     aria-label="Chat message"
@@ -367,8 +383,11 @@ const ChatbotInnerView: React.FC = () => {
                   </button>
                 </form>
 
-                <div className="traveally-cb-powered">
-                  Powered by <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">Traveally</a>
+                <div className="traveally-cb-powered-by">
+                  <span>Powered by </span>
+                  <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
+                    traveally.com
+                  </a>
                 </div>
               </div>
             </>
