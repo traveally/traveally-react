@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { ChatMessage } from "./types";
 import { sanitizeMessageContent } from "./security";
 import { Bot, User, ExternalLink, Compass } from "lucide-react";
+import { PackageCard } from "./PackageCard";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -10,6 +11,7 @@ interface MessageListProps {
   activeAgentName?: string;
   botAvatar?: string | null;
   botName?: string;
+  domain?: string;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
@@ -19,6 +21,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   activeAgentName,
   botAvatar,
   botName = "Assistant",
+  domain,
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -81,15 +84,25 @@ export const MessageList: React.FC<MessageListProps> = ({
             </div>
 
             <div className="traveally-cb-bubble-content">
-              {isAgent && msg.senderName && (
+              {isAgent && (
                 <div style={{ fontSize: "11px", fontWeight: 600, color: "var(--traveally-cb-primary)", marginBottom: "2px", marginLeft: "2px" }}>
-                  {msg.senderName}
+                  {msg.senderName || "Travel Specialist"}
+                </div>
+              )}
+              {msg.sender === "bot" && (
+                <div style={{ fontSize: "11px", fontWeight: 600, color: "var(--traveally-cb-primary)", marginBottom: "2px", marginLeft: "2px" }}>
+                  {msg.senderName || `${botName} AI`}
                 </div>
               )}
               <div className="traveally-cb-bubble">{renderFormattedText(msg.text)}</div>
 
-              {/* Optional Rich Metadata Card */}
-              {msg.metadata && msg.metadata.title && (
+              {/* Optional Rich Package Card */}
+              {msg.metadata && msg.metadata.package && (
+                <PackageCard packageData={msg.metadata.package} domain={domain} />
+              )}
+
+              {/* Optional Generic Metadata Card */}
+              {msg.metadata && msg.metadata.title && !msg.metadata.package && (
                 <div
                   style={{
                     background: "rgba(0, 180, 186, 0.08)",
@@ -101,7 +114,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                     justifyContent: "space-between",
                     gap: "8px",
                     fontSize: "12px",
-                    marginTop: "2px",
+                    marginTop: "4px",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

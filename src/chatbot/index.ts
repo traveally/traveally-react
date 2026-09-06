@@ -9,6 +9,8 @@ export * from "./api";
 export * from "./ChatbotContext";
 export * from "./MessageList";
 export * from "./QuickPrompts";
+export * from "./PackageCard";
+export * from "./PackageMentionDropdown";
 export * from "./TraveallyChatbot";
 
 /**

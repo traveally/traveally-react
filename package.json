@@ -1,6 +1,6 @@
 {
   "name": "@traveally/react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets and APIs.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -33,7 +33,9 @@
   ],
   "scripts": {
     "dev": "vite",
+    "dev:example": "vite --config vite.example.config.ts",
     "build": "tsc -p tsconfig.build.json && vite build",
+    "build:example": "vite build --config vite.example.config.ts",
     "test": "bun test",
     "lint": "tsc --noEmit",
     "preview": "vite preview"

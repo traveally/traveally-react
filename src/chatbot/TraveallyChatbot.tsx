@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useRef, CSSProperties } from "react";
-import { TraveallyChatbotConfig, QuickPrompt } from "./types";
+import { TraveallyChatbotConfig, QuickPrompt, PackageSummary } from "./types";
 import { TraveallyChatbotProvider, useTraveallyChatbot } from "./ChatbotContext";
 import { MessageList } from "./MessageList";
 import { QuickPrompts } from "./QuickPrompts";
 import { LeadForm } from "./LeadForm";
+import { PackageMentionDropdown } from "./PackageMentionDropdown";
+import { fetchOrgPackages } from "./api";
 import { MessageSquare, X, Send, Bot, RotateCcw, AlertTriangle } from "lucide-react";
 import "./chatbot.css";
 
@@ -41,6 +43,32 @@ const ChatbotInnerView: React.FC = () => {
   const [inputVal, setInputVal] = useState("");
   const typingTimerRef = useRef<any>(null);
 
+  // Package Mention (@) Autocomplete State
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPackages, setMentionPackages] = useState<PackageSummary[]>([]);
+  const [isSearchingPackages, setIsSearchingPackages] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<PackageSummary | null>(null);
+  const searchDebounceRef = useRef<any>(null);
+
+  const resolvedDomain =
+    config.domain || (typeof window !== "undefined" ? window.location.hostname : "traveally.com");
+
+  const triggerPackageSearch = (query: string) => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    setIsSearchingPackages(true);
+    searchDebounceRef.current = setTimeout(async () => {
+      try {
+        const pkgs = await fetchOrgPackages(resolvedDomain, query, config.backendUrl);
+        setMentionPackages(pkgs);
+      } catch {
+        setMentionPackages([]);
+      } finally {
+        setIsSearchingPackages(false);
+      }
+    }, 150);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputVal(val);
@@ -49,6 +77,31 @@ const ChatbotInnerView: React.FC = () => {
     typingTimerRef.current = setTimeout(() => {
       sendTyping(false);
     }, 2000);
+
+    // Check for '@' mention
+    const atIndex = val.lastIndexOf("@");
+    if (atIndex !== -1) {
+      const textAfterAt = val.slice(atIndex + 1);
+      if (!textAfterAt.includes("  ")) {
+        setShowMentions(true);
+        setMentionQuery(textAfterAt);
+        triggerPackageSearch(textAfterAt);
+        return;
+      }
+    }
+    setShowMentions(false);
+  };
+
+  const handleSelectMentionPackage = (pkg: PackageSummary) => {
+    setSelectedPackage(pkg);
+    const atIndex = inputVal.lastIndexOf("@");
+    if (atIndex !== -1) {
+      const beforeAt = inputVal.slice(0, atIndex);
+      setInputVal(`${beforeAt}@${pkg.package_name} `);
+    } else {
+      setInputVal((prev) => `${prev} @${pkg.package_name} `);
+    }
+    setShowMentions(false);
   };
 
   const theme = config.theme || {};
@@ -107,8 +160,14 @@ const ChatbotInnerView: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim() || isLoading) return;
-    sendMessage(inputVal);
+    if (selectedPackage) {
+      sendMessage(inputVal, { type: "package", package: selectedPackage });
+      setSelectedPackage(null);
+    } else {
+      sendMessage(inputVal);
+    }
     setInputVal("");
+    setShowMentions(false);
   };
 
   const handlePromptSelect = (promptMsg: string) => {
@@ -205,6 +264,7 @@ const ChatbotInnerView: React.FC = () => {
                     activeAgentName={activeAgentName}
                     botAvatar={resolvedShortLogo || resolvedLogo}
                     botName={resolvedTitle}
+                    domain={resolvedDomain}
                   />
 
                   {/* Quick Prompts (visible if conversation is early) */}
@@ -216,6 +276,16 @@ const ChatbotInnerView: React.FC = () => {
 
                   {/* Footer Input Area */}
                   <div className="traveally-cb-footer">
+                    {showMentions && (
+                      <PackageMentionDropdown
+                        packages={mentionPackages}
+                        isLoading={isSearchingPackages}
+                        query={mentionQuery}
+                        onSelect={handleSelectMentionPackage}
+                        onClose={() => setShowMentions(false)}
+                      />
+                    )}
+
                     {activeError && (
                       <div className="traveally-cb-error-banner">
                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -254,9 +324,9 @@ const ChatbotInnerView: React.FC = () => {
                     </form>
 
                     <div className="traveally-cb-powered-by">
-                      <span>Powered by </span>
+                      <span>Powered By </span>
                       <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
-                        traveally.com
+                        Traveally.com
                       </a>
                     </div>
                   </div>
@@ -335,6 +405,7 @@ const ChatbotInnerView: React.FC = () => {
                 activeAgentName={activeAgentName}
                 botAvatar={resolvedShortLogo || resolvedLogo}
                 botName={resolvedTitle}
+                domain={resolvedDomain}
               />
 
               {/* Quick Prompts */}
@@ -346,6 +417,16 @@ const ChatbotInnerView: React.FC = () => {
 
               {/* Footer Input Area */}
               <div className="traveally-cb-footer">
+                {showMentions && (
+                  <PackageMentionDropdown
+                    packages={mentionPackages}
+                    isLoading={isSearchingPackages}
+                    query={mentionQuery}
+                    onSelect={handleSelectMentionPackage}
+                    onClose={() => setShowMentions(false)}
+                  />
+                )}
+
                 {activeError && (
                   <div className="traveally-cb-error-banner">
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -384,9 +465,9 @@ const ChatbotInnerView: React.FC = () => {
                 </form>
 
                 <div className="traveally-cb-powered-by">
-                  <span>Powered by </span>
+                  <span>Powered By </span>
                   <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
-                    traveally.com
+                    Traveally.com
                   </a>
                 </div>
               </div>

@@ -3,7 +3,7 @@
  * Connects to backend.traveally.com for dynamic organization branding & conversational AI.
  */
 
-import { OrganizationBranding, ChatMessageMetadata } from "./types";
+import { OrganizationBranding, ChatMessageMetadata, PackageSummary } from "./types";
 import { isSafeUrl } from "./security";
 
 const DEFAULT_BACKEND_URL = "https://backend.traveally.com";
@@ -198,6 +198,46 @@ export async function fetchConversationMessages(
 }
 
 /**
+ * Fetch packages for @ package mentions in chatbot
+ */
+export async function fetchOrgPackages(
+  domain: string,
+  query?: string,
+  backendUrl: string = DEFAULT_BACKEND_URL
+): Promise<PackageSummary[]> {
+  const cleanBackend = backendUrl.replace(/\/+$/, "");
+  const normalizedDomain = (domain || "traveally.com").trim().toLowerCase();
+  const q = (query || "").trim();
+  const targetUrl = `${cleanBackend}/api/chat/packages?domain=${encodeURIComponent(normalizedDomain)}${q ? `&q=${encodeURIComponent(q)}` : ""}&limit=4`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch(targetUrl, {
+      headers: {
+        Accept: "application/json",
+        "x-org-domain": normalizedDomain,
+        "x-traveally-client": "chatbot-sdk",
+      },
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.packages)) {
+        return data.packages;
+      }
+    }
+  } catch (err) {
+    console.warn("[@traveally/chatbot] Package search error:", err);
+  }
+  return [];
+}
+
+/**
  * Send conversational message to backend.traveally.com
  */
 export async function sendChatToBackend(params: {
@@ -206,13 +246,14 @@ export async function sendChatToBackend(params: {
   domain: string;
   backendUrl?: string;
   customerToken?: string;
+  metadata?: Record<string, any>;
   traveler?: {
     name?: string;
     email?: string;
     phone?: string;
   };
-}): Promise<{ reply: string | null; conversationId?: string; metadata?: ChatMessageMetadata }> {
-  const { text, sessionId, domain, backendUrl = DEFAULT_BACKEND_URL, customerToken, traveler } = params;
+}): Promise<{ reply: string | null; senderName?: string; conversationId?: string; metadata?: ChatMessageMetadata }> {
+  const { text, sessionId, domain, backendUrl = DEFAULT_BACKEND_URL, customerToken, traveler, metadata } = params;
   const cleanBackend = backendUrl.replace(/\/+$/, "");
 
   const headers: Record<string, string> = {
@@ -242,6 +283,7 @@ export async function sendChatToBackend(params: {
         domain,
         channel: "website_chatbot",
         traveler,
+        metadata,
       }),
       signal: controller.signal,
     });
@@ -253,6 +295,7 @@ export async function sendChatToBackend(params: {
       if (data && data.success) {
         return {
           reply: data.reply || null,
+          senderName: data.sender_name || data.senderName,
           conversationId: data.conversation_id,
           metadata: data.metadata,
         };
@@ -260,6 +303,7 @@ export async function sendChatToBackend(params: {
       if (data && data.reply) {
         return {
           reply: data.reply,
+          senderName: data.sender_name || data.senderName,
           conversationId: data.conversation_id,
           metadata: data.metadata,
         };

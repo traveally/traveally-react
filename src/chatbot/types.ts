@@ -58,6 +58,17 @@ export interface QuickPrompt {
   icon?: string;
 }
 
+export interface PackageSummary {
+  id: string;
+  slug?: string;
+  package_name: string;
+  package_subtitle?: string;
+  price?: number;
+  duration?: string;
+  destination?: string;
+  currency_symbol?: string;
+}
+
 export interface ChatMessageMetadata {
   type?: "package" | "quote" | "inquiry" | "link" | "card";
   title?: string;
@@ -65,6 +76,7 @@ export interface ChatMessageMetadata {
   price?: string | number;
   currency?: string;
   imageUrl?: string;
+  package?: PackageSummary;
   [key: string]: any;
 }
 
@@ -224,7 +236,7 @@ export interface ChatbotContextValue {
   close: () => void;
   toggle: () => void;
   messages: ChatMessage[];
-  sendMessage: (text: string) => Promise<void>;
+  sendMessage: (text: string, metadata?: ChatMessageMetadata) => Promise<void>;
   sendTyping: (isTyping: boolean) => void;
   clearMessages: () => void;
   isLoading: boolean;

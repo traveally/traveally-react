@@ -4,6 +4,7 @@ import {
   TraveallyChatbotConfig,
   ChatbotContextValue,
   ChatMessage,
+  ChatMessageMetadata,
   OrganizationBranding,
   FormField,
 } from "./types";
@@ -322,14 +323,21 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
       // Receive typing events from dashboard agent
       socket.on("chat_typing", (data: { conversationId?: string; sessionId?: string; isTyping: boolean; sender: string; senderName?: string }) => {
         if (data?.sender === "admin" || data?.sender === "agent") {
-          setIsAgentTyping(Boolean(data.isTyping));
-          if (data.senderName) setActiveAgentName(data.senderName);
+          const isMatch =
+            (!data.conversationId && !data.sessionId) ||
+            (data.conversationId && conversationId && data.conversationId === conversationId) ||
+            (data.sessionId && data.sessionId === sessionIdRef.current);
 
-          if (agentTypingTimerRef.current) clearTimeout(agentTypingTimerRef.current);
-          if (data.isTyping) {
-            agentTypingTimerRef.current = setTimeout(() => {
-              setIsAgentTyping(false);
-            }, 3500);
+          if (isMatch) {
+            setIsAgentTyping(Boolean(data.isTyping));
+            if (data.senderName) setActiveAgentName(data.senderName);
+
+            if (agentTypingTimerRef.current) clearTimeout(agentTypingTimerRef.current);
+            if (data.isTyping) {
+              agentTypingTimerRef.current = setTimeout(() => {
+                setIsAgentTyping(false);
+              }, 3500);
+            }
           }
         }
       });
@@ -503,9 +511,24 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
   };
 
   // Send message handler with security rate limiting & backend dispatch
-  const sendMessage = async (text: string, customTraveler?: Record<string, any>) => {
+  const sendMessage = async (
+    text: string,
+    metadataOrTraveler?: ChatMessageMetadata | Record<string, any>,
+    explicitMetadata?: ChatMessageMetadata
+  ) => {
     const cleanText = text.trim();
     if (!cleanText) return;
+
+    let customTraveler: Record<string, any> | undefined = undefined;
+    let metadata: ChatMessageMetadata | undefined = explicitMetadata;
+
+    if (metadataOrTraveler) {
+      if ("package" in metadataOrTraveler || "title" in metadataOrTraveler || "type" in metadataOrTraveler) {
+        metadata = metadataOrTraveler as ChatMessageMetadata;
+      } else {
+        customTraveler = metadataOrTraveler;
+      }
+    }
 
     // Security check: Rate Limiting
     const check = rateLimiterRef.current.canProceed();
@@ -522,6 +545,7 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
       sender: "user",
       text: cleanText,
       createdAt: new Date().toISOString(),
+      metadata,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -533,6 +557,7 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
     try {
       let botReplyText: string | null = null;
       let botMetadata = undefined;
+      let botSenderNameFromBackend: string | undefined = undefined;
 
       if (typeof config.onSendMessage === "function") {
         const customRes = await config.onSendMessage(cleanText, {
@@ -554,6 +579,7 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
           backendUrl: config.backendUrl,
           customerToken: config.customerToken,
           traveler: travelerToSend,
+          metadata,
         });
 
         if (response.conversationId && response.conversationId !== conversationId) {
@@ -562,15 +588,19 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
 
         botReplyText = response.reply;
         botMetadata = response.metadata;
+        botSenderNameFromBackend = response.senderName;
       }
 
-      // Only append bot message if an automated reply was generated (avoids fake bot spam in manual mode)
       if (botReplyText) {
+        const botSenderName =
+          botSenderNameFromBackend ||
+          (branding?.name ? `${branding.name} AI` : (config.title ? `${config.title} AI` : "Travel Assistant AI"));
+
         const botMessage: ChatMessage = {
           id: `bot-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
           sender: "bot",
           text: botReplyText,
-          senderName: branding?.name || config.title || backendConfig?.title || "Travel Assistant",
+          senderName: botSenderName,
           avatarUrl: config.avatarUrl || branding?.icon || branding?.logo || backendConfig?.logo || undefined,
           createdAt: new Date().toISOString(),
           metadata: botMetadata,

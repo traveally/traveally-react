@@ -128,6 +128,7 @@
     opacity: 0;
     transform: translateY(18px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -216,10 +217,13 @@
 }
 
 @keyframes traveallyPulseDot {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.18);
     opacity: 0.75;
@@ -375,10 +379,14 @@
 }
 
 @keyframes traveallyPulse {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     transform: scale(0.6);
     opacity: 0.4;
   }
+
   40% {
     transform: scale(1);
     opacity: 1;
@@ -417,12 +425,13 @@
 
 /* Footer / Input Area */
 .traveally-cb-footer {
-  padding: 12px 14px;
+  position: relative;
+  padding: 12px 14px 0 14px;
   background: var(--traveally-cb-bg);
   border-top: 1px solid var(--traveally-cb-border);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .traveally-cb-error-banner {
@@ -496,19 +505,49 @@
   justify-content: center;
   gap: 4px;
   font-size: 11px;
-  color: #94a3b8;
-  padding: 6px 0 2px 0;
+  color: #475569;
+  padding: 7px 14px;
   text-align: center;
   letter-spacing: 0.01em;
   user-select: none;
+  background-color: #e2e8f0;
+  border-radius: 0;
+  margin-left: -14px;
+  margin-right: -14px;
+  margin-bottom: 0;
+  border-top: 1px solid #cbd5e1;
+}
+
+.traveally-cb-leadform-wrap .traveally-cb-powered-by {
+  margin-left: -18px;
+  margin-right: -18px;
+  margin-bottom: 0;
 }
 
 .traveally-cb-powered-by a,
 .traveally-cb-powered a {
-  color: #475569;
+  color: #1e293b;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.15s ease;
+}
+
+.traveally-cb-powered-by a:hover,
+.traveally-cb-powered a:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+.traveally-cb-dark .traveally-cb-powered-by,
+.traveally-cb-dark .traveally-cb-powered {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-top: 1px solid #334155;
+}
+
+.traveally-cb-dark .traveally-cb-powered-by a,
+.traveally-cb-dark .traveally-cb-powered a {
+  color: #f1f5f9;
 }
 
 .traveally-cb-leadform-wrap {
@@ -561,4 +600,250 @@
     border-radius: 0;
     border: none;
   }
+}
+
+/* ==========================================================================
+   Package Mention Autocomplete Dropdown (@)
+   ========================================================================== */
+.traveally-cb-mention-dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 14px;
+  right: 14px;
+  background: var(--traveally-cb-bg, #ffffff);
+  border: 1px solid var(--traveally-cb-border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px -6px rgba(1, 21, 49, 0.16), 0 4px 10px -2px rgba(1, 21, 49, 0.08);
+  overflow: hidden;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: traveallySlideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.traveally-cb-mention-header {
+  padding: 8px 12px 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--traveally-cb-text-muted, #64748b);
+  border-bottom: 1px solid var(--traveally-cb-border, #e2e8f0);
+  background: rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.traveally-cb-mention-item {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  border: none;
+  border-bottom: 1px solid var(--traveally-cb-border, #e2e8f0);
+  transition: background-color 0.15s ease;
+  text-align: left;
+  background: transparent;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.traveally-cb-mention-item:last-child {
+  border-bottom: none;
+}
+
+.traveally-cb-mention-item:hover,
+.traveally-cb-mention-item:focus {
+  background-color: rgba(0, 180, 186, 0.08);
+  outline: none;
+}
+
+.traveally-cb-mention-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.traveally-cb-mention-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--traveally-cb-text, #1e293b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traveally-cb-mention-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--traveally-cb-primary, #00b4ba);
+  white-space: nowrap;
+}
+
+.traveally-cb-mention-details {
+  font-size: 11px;
+  color: var(--traveally-cb-text-muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traveally-cb-mention-empty {
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--traveally-cb-text-muted, #64748b);
+}
+
+.traveally-cb-spin {
+  animation: traveallySpin 0.9s linear infinite;
+}
+
+@keyframes traveallySpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Clickable Package Card in Messages (No Image)
+   ========================================================================== */
+.traveally-cb-package-card {
+  margin-top: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(1, 21, 49, 0.06);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.traveally-cb-package-card:hover {
+  border-color: var(--traveally-cb-primary, #00b4ba);
+  box-shadow: 0 6px 16px rgba(0, 180, 186, 0.16);
+  transform: translateY(-1px);
+}
+
+.traveally-cb-pkg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.traveally-cb-pkg-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.traveally-cb-pkg-price {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--traveally-cb-primary, #00b4ba);
+  white-space: nowrap;
+}
+
+.traveally-cb-pkg-subtitle {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.traveally-cb-pkg-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.traveally-cb-pkg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.traveally-cb-pkg-action {
+  margin-top: 3px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--traveally-cb-primary, #00b4ba);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Dark mode overrides for cards & mentions */
+.traveally-cb-dark .traveally-cb-mention-dropdown {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+}
+
+.traveally-cb-dark .traveally-cb-mention-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: #1e293b;
+  color: #94a3b8;
+}
+
+.traveally-cb-dark .traveally-cb-mention-item {
+  border-color: #1e293b;
+}
+
+.traveally-cb-dark .traveally-cb-mention-name {
+  color: #f1f5f9;
+}
+
+.traveally-cb-dark .traveally-cb-mention-details {
+  color: #94a3b8;
+}
+
+.traveally-cb-dark .traveally-cb-mention-empty {
+  color: #94a3b8;
+}
+
+.traveally-cb-dark .traveally-cb-package-card {
+  background: #17263c;
+  border-color: #1e293b;
+}
+
+.traveally-cb-dark .traveally-cb-pkg-title {
+  color: #f8fafc;
+}
+
+.traveally-cb-dark .traveally-cb-pkg-subtitle,
+.traveally-cb-dark .traveally-cb-pkg-meta {
+  color: #94a3b8;
+}
+
+.traveally-cb-dark .traveally-cb-pkg-badge {
+  background: #0b1526;
+  color: #cbd5e1;
+}
+
+.traveally-cb-dark .traveally-cb-pkg-action {
+  border-color: #1e293b;
 }

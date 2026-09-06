@@ -66,7 +66,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
     <div
       className="traveally-cb-leadform-wrap"
       style={{
-        padding: "18px 18px 10px 18px",
+        padding: "18px 18px 0 18px",
         display: "flex",
         flexDirection: "column",
         flex: 1,
@@ -134,9 +134,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           </button>
 
           <div className="traveally-cb-powered-by">
-            <span>Powered by </span>
+            <span>Powered By </span>
             <a href="https://traveally.com" target="_blank" rel="noopener noreferrer">
-              traveally.com
+              Traveally.com
             </a>
           </div>
         </div>
