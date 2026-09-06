@@ -60,8 +60,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/traveally/traveally.git"
+    "url": "https://github.com/traveally/traveally-react.git"
   },
+
   "homepage": "https://traveally.com",
   "peerDependencies": {
 
