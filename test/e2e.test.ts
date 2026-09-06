@@ -19,7 +19,7 @@ describe("Live E2E Integration with backend.traveally.com", () => {
       expect(branding.name.toLowerCase()).toContain("traveally");
       expect(branding.logo).toBeString();
       expect(branding.is_platform).toBe(true);
-    });
+    }, 20000);
 
     it("fetches live chatbot configuration & lead form policy", async () => {
       const config = await fetchChatbotConfig(TEST_DOMAIN, BACKEND_URL);
@@ -29,7 +29,7 @@ describe("Live E2E Integration with backend.traveally.com", () => {
         expect(config.theme).toBeDefined();
         expect(config.form_fields).toBeArray();
       }
-    });
+    }, 20000);
   });
 
   describe("Public Website API Integration", () => {
@@ -42,7 +42,7 @@ describe("Live E2E Integration with backend.traveally.com", () => {
         expect(pkg.slug).toBeString();
         expect(pkg.price).toBeNumber();
       }
-    });
+    }, 20000);
 
     it("fetches live blog articles from backend.traveally.com", async () => {
       const blogs = await client.blogs.getAll();
@@ -52,16 +52,16 @@ describe("Live E2E Integration with backend.traveally.com", () => {
         expect(blog.title).toBeString();
         expect(blog.slug).toBeString();
       }
-    });
+    }, 20000);
 
     it("fetches collections from backend.traveally.com", async () => {
       const collections = await client.collections.getAll();
       expect(collections).toBeArray();
-    });
+    }, 20000);
 
     it("fetches verified reviews from backend.traveally.com", async () => {
       const reviews = await client.reviews.getAll();
       expect(reviews).toBeArray();
-    });
+    }, 20000);
   });
 });
