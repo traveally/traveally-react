@@ -37,7 +37,7 @@ jobs:
       - name: Build Library Bundle
         run: bun run build
 
-      - name: Publish @traveally Package
+      - name: Publish @traveally/react Package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public

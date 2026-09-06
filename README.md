@@ -1,10 +1,10 @@
-# @traveally
+# @traveally/react
 
-Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets, dynamic branding, and multi-tenant integrations.
+Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets, dynamic branding, public website APIs, and multi-tenant integrations.
 
 ## Features
 
-- **Subpath Module Architecture**: Import the chatbot via `@traveally/chatbot` (or typo-alias `@traveally/chabot`), with room for additional platform modules under `@traveally`.
+- **Subpath Module Architecture**: Import from `@traveally/react` directly or modular subpaths `@traveally/react/chatbot` and `@traveally/react/api`.
 - **Dynamic Backend Branding**: Automatically queries `https://backend.traveally.com/api/dashboard/public/resolve/:domain` to fetch the organization's verified logo, name, and icon in real-time.
 - **Config-Driven Color Scheme**: Fully customizable theme system (`primaryColor`, `secondaryColor`, `accentColor`, `userBubbleColor`, `botBubbleColor`, `borderRadius`, `mode`) mapped directly to CSS variables.
 - **Enterprise Security**:
@@ -20,9 +20,9 @@ Official React client library and SDK for Traveally platform services, featuring
 ## Installation
 
 ```bash
-npm install @traveally lucide-react
+npm install @traveally/react lucide-react
 # or
-bun add @traveally lucide-react
+bun add @traveally/react lucide-react
 ```
 
 ---
@@ -33,8 +33,8 @@ bun add @traveally lucide-react
 
 ```tsx
 import React from "react";
-import { TraveallyChatbot } from "@traveally/chatbot";
-import "@traveally/chatbot/styles.css";
+import { TraveallyChatbot } from "@traveally/react";
+import "@traveally/react/styles.css";
 
 export default function App() {
   return (
@@ -142,7 +142,7 @@ For custom triggers or UI integration:
 
 ```tsx
 import React from "react";
-import { TraveallyChatbotProvider, useTraveallyChatbot } from "@traveally/chatbot";
+import { TraveallyChatbotProvider, useTraveallyChatbot } from "@traveally/react/chatbot";
 
 function CustomChatButton() {
   const { toggle, isOpen, branding } = useTraveallyChatbot();
@@ -170,8 +170,8 @@ export default function App() {
 If you want to mount the chatbot without JSX or in plain JavaScript:
 
 ```ts
-import { initChatbot } from "@traveally/chatbot";
-import "@traveally/chatbot/styles.css";
+import { initChatbot } from "@traveally/react/chatbot";
+import "@traveally/react/styles.css";
 
 const instance = initChatbot({
   domain: "traveally.com",
@@ -182,12 +182,12 @@ const instance = initChatbot({
 // instance.unmount();
 ```
 
-## Public Website API Client (`@traveally` or `@traveally/api`)
+## Public Website API Client (`@traveally/react` or `@traveally/react/api`)
 
 The library includes a complete TypeScript API client to build custom travel websites, customer portals, checkout flows, and review sections:
 
 ```tsx
-import { TraveallyClient, TraveallyProvider, useTraveally } from "@traveally";
+import { TraveallyClient, TraveallyProvider, useTraveally } from "@traveally/react";
 
 // Initialize client directly
 const client = new TraveallyClient({

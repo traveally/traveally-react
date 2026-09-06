@@ -1,5 +1,5 @@
 {
-  "name": "@traveally",
+  "name": "@traveally/react",
   "version": "1.0.0",
   "description": "Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets and APIs.",
   "type": "module",
@@ -25,15 +25,12 @@
     "./chatbot/styles.css": "./dist/chatbot/style.css",
     "./styles.css": "./dist/chatbot/style.css"
   },
-
   "files": [
     "dist",
     "chatbot",
     "api",
     "README.md"
   ],
-
-
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
@@ -41,7 +38,6 @@
     "lint": "tsc --noEmit",
     "preview": "vite preview"
   },
-
   "keywords": [
     "traveally",
     "chatbot",
@@ -60,12 +56,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/traveally/traveally-react.git"
+    "url": "git+https://github.com/traveally/traveally-react.git"
   },
-
   "homepage": "https://traveally.com",
   "peerDependencies": {
-
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
