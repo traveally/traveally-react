@@ -114,6 +114,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             style={{
               width: "100%",
               padding: "12px 18px",
+              marginBottom: "14px",
               borderRadius: "10px",
               background: "var(--traveally-cb-primary, #022247)",
               color: "#ffffff",

@@ -1,6 +1,6 @@
 {
   "name": "@traveally/react",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets and APIs.",
   "type": "module",
   "main": "./dist/index.cjs",
