@@ -1,0 +1,6 @@
+{
+  "name": "@traveally/api",
+  "main": "../dist/api/index.cjs",
+  "module": "../dist/api/index.mjs",
+  "types": "../dist/api/index.d.ts"
+}

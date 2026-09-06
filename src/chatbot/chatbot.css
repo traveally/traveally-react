@@ -1,0 +1,518 @@
+/**
+ * @traveally/chatbot Stylesheet
+ * Config-based CSS custom properties & modern glassmorphism aesthetic.
+ */
+
+:root {
+  --traveally-cb-primary: #00b4ba;
+  --traveally-cb-primary-hover: #009aa0;
+  --traveally-cb-primary-gradient: linear-gradient(135deg, #00b4ba 0%, #008287 100%);
+  --traveally-cb-secondary: #011531;
+  --traveally-cb-accent: #c0fbff;
+  --traveally-cb-bg: #ffffff;
+  --traveally-cb-text: #1e293b;
+  --traveally-cb-text-muted: #64748b;
+  --traveally-cb-bot-bubble: #f1f5f9;
+  --traveally-cb-bot-text: #0f172a;
+  --traveally-cb-user-bubble: #00b4ba;
+  --traveally-cb-user-text: #ffffff;
+  --traveally-cb-radius: 18px;
+  --traveally-cb-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --traveally-cb-shadow: 0 12px 40px -8px rgba(1, 21, 49, 0.2), 0 4px 12px -2px rgba(1, 21, 49, 0.08);
+  --traveally-cb-glass-bg: rgba(255, 255, 255, 0.96);
+  --traveally-cb-border: rgba(226, 232, 240, 0.8);
+}
+
+/* Dark mode overrides */
+.traveally-cb-dark {
+  --traveally-cb-bg: #0b1526;
+  --traveally-cb-text: #f1f5f9;
+  --traveally-cb-text-muted: #94a3b8;
+  --traveally-cb-bot-bubble: #17263c;
+  --traveally-cb-bot-text: #f8fafc;
+  --traveally-cb-border: #1e293b;
+  --traveally-cb-glass-bg: rgba(11, 21, 38, 0.95);
+  --traveally-cb-shadow: 0 16px 48px -10px rgba(0, 0, 0, 0.6);
+}
+
+/* Floating Launcher Trigger */
+.traveally-cb-launcher-wrap {
+  position: fixed;
+  z-index: 999998;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.traveally-cb-launcher-wrap.bottom-right {
+  bottom: 24px;
+  right: 24px;
+}
+
+.traveally-cb-launcher-wrap.bottom-left {
+  bottom: 24px;
+  left: 24px;
+  align-items: flex-start;
+}
+
+.traveally-cb-launcher-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--traveally-cb-primary-gradient);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px -4px rgba(0, 180, 186, 0.5), 0 4px 10px -2px rgba(1, 21, 49, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  position: relative;
+  outline: none;
+}
+
+.traveally-cb-launcher-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 30px -4px rgba(0, 180, 186, 0.6), 0 6px 14px -2px rgba(1, 21, 49, 0.25);
+}
+
+.traveally-cb-launcher-btn:active {
+  transform: scale(0.96);
+}
+
+.traveally-cb-launcher-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffffff;
+}
+
+.traveally-cb-launcher-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background: #22c55e;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+}
+
+/* Floating Window Card */
+.traveally-cb-window {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: 610px;
+  max-height: calc(100vh - 120px);
+  background: var(--traveally-cb-glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--traveally-cb-radius);
+  border: 1px solid var(--traveally-cb-border);
+  box-shadow: var(--traveally-cb-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--traveally-cb-font);
+  color: var(--traveally-cb-text);
+  z-index: 999999;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: traveallySlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes traveallySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Inline Embed Mode */
+.traveally-cb-window.inline {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  max-height: none;
+  position: relative;
+  box-shadow: none;
+}
+
+/* Header */
+.traveally-cb-header {
+  background: var(--traveally-cb-secondary);
+  color: #ffffff;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.traveally-cb-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.traveally-cb-logo-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.traveally-cb-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.traveally-cb-header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.traveally-cb-header-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.traveally-cb-header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 3px;
+}
+
+.traveally-cb-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.traveally-cb-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.traveally-cb-icon-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.traveally-cb-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: scale(1.04);
+}
+
+/* Chat Messages Body */
+.traveally-cb-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth;
+}
+
+.traveally-cb-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.traveally-cb-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+/* Message Bubble */
+.traveally-cb-msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  max-width: 88%;
+}
+
+.traveally-cb-msg-row.bot {
+  align-self: flex-start;
+}
+
+.traveally-cb-msg-row.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.traveally-cb-avatar-bubble {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--traveally-cb-secondary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+.traveally-cb-avatar-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.traveally-cb-bubble-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.traveally-cb-bubble {
+  padding: 11px 15px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.48;
+  word-break: break-word;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.traveally-cb-msg-row.bot .traveally-cb-bubble {
+  background: var(--traveally-cb-bot-bubble);
+  color: var(--traveally-cb-bot-text);
+  border-bottom-left-radius: 4px;
+}
+
+.traveally-cb-msg-row.user .traveally-cb-bubble {
+  background: var(--traveally-cb-user-bubble);
+  color: var(--traveally-cb-user-text);
+  border-bottom-right-radius: 4px;
+}
+
+.traveally-cb-msg-time {
+  font-size: 10.5px;
+  color: var(--traveally-cb-text-muted);
+  padding: 0 4px;
+}
+
+.traveally-cb-msg-row.user .traveally-cb-msg-time {
+  text-align: right;
+}
+
+/* Typing Indicator */
+.traveally-cb-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: var(--traveally-cb-bot-bubble);
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  width: fit-content;
+}
+
+.traveally-cb-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--traveally-cb-text-muted);
+  animation: traveallyPulse 1.2s infinite ease-in-out;
+}
+
+.traveally-cb-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.traveally-cb-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes traveallyPulse {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Quick Prompts Chips */
+.traveally-cb-prompts-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 2px 2px 8px 2px;
+}
+
+.traveally-cb-prompt-chip {
+  background: #ffffff;
+  color: var(--traveally-cb-secondary);
+  border: 1px solid var(--traveally-cb-border);
+  border-radius: 20px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.traveally-cb-prompt-chip:hover {
+  background: var(--traveally-cb-accent);
+  border-color: var(--traveally-cb-primary);
+  color: var(--traveally-cb-secondary);
+  transform: translateY(-1px);
+}
+
+/* Footer / Input Area */
+.traveally-cb-footer {
+  padding: 12px 14px;
+  background: var(--traveally-cb-bg);
+  border-top: 1px solid var(--traveally-cb-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.traveally-cb-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #dc2626;
+  font-size: 11.5px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.traveally-cb-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--traveally-cb-bot-bubble);
+  border: 1px solid var(--traveally-cb-border);
+  border-radius: 24px;
+  padding: 4px 6px 4px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.traveally-cb-form:focus-within {
+  border-color: var(--traveally-cb-primary);
+  box-shadow: 0 0 0 2px rgba(0, 180, 186, 0.2);
+  background: #ffffff;
+}
+
+.traveally-cb-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--traveally-cb-text);
+  padding: 6px 0;
+}
+
+.traveally-cb-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--traveally-cb-primary-gradient);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.traveally-cb-send-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.traveally-cb-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.traveally-cb-powered {
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--traveally-cb-text-muted);
+  margin-top: 2px;
+}
+
+.traveally-cb-powered a {
+  color: var(--traveally-cb-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Mobile responsive full-screen drawer */
+@media (max-width: 480px) {
+  .traveally-cb-launcher-wrap {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .traveally-cb-launcher-wrap.bottom-left {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .traveally-cb-window:not(.inline) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    border: none;
+  }
+}

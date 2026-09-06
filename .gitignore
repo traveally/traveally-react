@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & Secrets (NEVER COMMIT TOKENS OR KEYS)
+.env
+.env.local
+.env.*.local
+.npmrc
+*.pem
+*.key
+
+# Test and coverage
+coverage/
+.nyc_output/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.log
+
+# System & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+scratch/
+tmp/
+*.tgz

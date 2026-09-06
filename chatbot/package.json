@@ -1,0 +1,6 @@
+{
+  "name": "@traveally/chatbot",
+  "main": "../dist/chatbot/index.cjs",
+  "module": "../dist/chatbot/index.mjs",
+  "types": "../dist/chatbot/index.d.ts"
+}

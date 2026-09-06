@@ -1,0 +1,85 @@
+{
+  "name": "@traveally",
+  "version": "1.0.0",
+  "description": "Official React client library and SDK for Traveally platform services, featuring secure conversational AI chatbot widgets and APIs.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./chatbot": {
+      "types": "./dist/chatbot/index.d.ts",
+      "import": "./dist/chatbot/index.mjs",
+      "require": "./dist/chatbot/index.cjs"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "import": "./dist/api/index.mjs",
+      "require": "./dist/api/index.cjs"
+    },
+    "./chatbot/styles.css": "./dist/chatbot/style.css",
+    "./styles.css": "./dist/chatbot/style.css"
+  },
+
+  "files": [
+    "dist",
+    "chatbot",
+    "api",
+    "README.md"
+  ],
+
+
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "test": "bun test",
+    "lint": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+
+  "keywords": [
+    "traveally",
+    "chatbot",
+    "travel",
+    "react",
+    "ai",
+    "widget",
+    "concierge",
+    "sdk",
+    "api"
+  ],
+  "author": "Traveally",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/traveally/traveally.git"
+  },
+  "homepage": "https://traveally.com",
+  "peerDependencies": {
+
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.3"
+  },
+  "dependencies": {
+    "lucide-react": "^0.554.0"
+  }
+}
