@@ -245,6 +245,7 @@ export async function sendChatToBackend(params: {
   sessionId: string;
   domain: string;
   backendUrl?: string;
+  aiServiceUrl?: string;
   customerToken?: string;
   metadata?: Record<string, any>;
   traveler?: {
@@ -253,7 +254,7 @@ export async function sendChatToBackend(params: {
     phone?: string;
   };
 }): Promise<{ reply: string | null; senderName?: string; conversationId?: string; metadata?: ChatMessageMetadata }> {
-  const { text, sessionId, domain, backendUrl = DEFAULT_BACKEND_URL, customerToken, traveler, metadata } = params;
+  const { text, sessionId, domain, backendUrl = DEFAULT_BACKEND_URL, aiServiceUrl, customerToken, traveler, metadata } = params;
   const cleanBackend = backendUrl.replace(/\/+$/, "");
 
   const headers: Record<string, string> = {
@@ -268,7 +269,7 @@ export async function sendChatToBackend(params: {
     headers["Authorization"] = `Bearer ${customerToken}`;
   }
 
-  // First attempt dedicated chatbot / AI conversational endpoint
+  // First attempt dedicated chatbot / AI conversational endpoint on backend
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12000);
@@ -310,7 +311,47 @@ export async function sendChatToBackend(params: {
       }
     }
   } catch {
-    // Gracefully fall back to inquiry submission or intelligent travel assistant
+    // Gracefully fall back to dedicated AI service or inquiry submission
+  }
+
+  // Attempt direct call to dedicated AI microservice (ai.traveally.com)
+  const resolvedAiUrl = (aiServiceUrl || "https://ai.traveally.com").replace(/\/+$/, "");
+  try {
+    const aiController = new AbortController();
+    const aiTimeoutId = setTimeout(() => aiController.abort(), 10000);
+
+    const aiRes = await fetch(`${resolvedAiUrl}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-org-domain": domain,
+      },
+      body: JSON.stringify({
+        message: text,
+        domain,
+        system_prompt: `You are an AI travel concierge for ${domain}. Help travelers with holiday destinations, package options, and customized itineraries politely and informatively.`
+      }),
+      signal: aiController.signal,
+    });
+
+    clearTimeout(aiTimeoutId);
+
+    if (aiRes.ok) {
+      const aiData = await aiRes.json();
+      if (aiData && aiData.success && aiData.reply) {
+        return {
+          reply: aiData.reply,
+          senderName: `${domain} AI`,
+          metadata: {
+            ai_powered: true,
+            model: aiData.model || "gemini-2.0-flash",
+          },
+        };
+      }
+    }
+  } catch {
+    // Fall back to inquiry submission or local templates
   }
 
   // Check if message is a booking inquiry or lead

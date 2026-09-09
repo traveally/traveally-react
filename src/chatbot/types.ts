@@ -77,6 +77,8 @@ export interface ChatMessageMetadata {
   currency?: string;
   imageUrl?: string;
   package?: PackageSummary;
+  ai_powered?: boolean;
+  model?: string;
   [key: string]: any;
 }
 
@@ -103,6 +105,12 @@ export interface TraveallyChatbotConfig {
    * Defaults to "https://backend.traveally.com".
    */
   backendUrl?: string;
+
+  /**
+   * Dedicated AI microservice URL for dynamic Gemini conversational responses.
+   * Defaults to "https://ai.traveally.com".
+   */
+  aiServiceUrl?: string;
 
   /**
    * Title shown at the top of the chatbot window.

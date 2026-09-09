@@ -7,6 +7,7 @@ export interface TraveallyApiConfig {
   domain?: string;
   organizationId?: string;
   authToken?: string | null;
+  aiServiceUrl?: string;
   onTokenExpired?: () => void;
 }
 
@@ -15,6 +16,32 @@ export interface ApiResponse<T = any> {
   message?: string;
   data?: T;
   [key: string]: any;
+}
+
+// ── AI Service Types ────────────────────────────────────────
+export interface AiChatMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+export interface AiChatParams {
+  message?: string;
+  messages?: AiChatMessage[];
+  domain?: string;
+  organization_id?: string;
+  system_prompt?: string;
+  model?: string;
+  max_tokens?: number;
+  temperature?: number;
+}
+
+export interface AiChatResponse {
+  success: boolean;
+  reply: string;
+  model: string;
+  provider: string;
+  tokens_used?: number;
+  message?: string;
 }
 
 // ── Package & Catalog Types ─────────────────────────────────

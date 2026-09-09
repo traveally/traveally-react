@@ -11,7 +11,9 @@ import type {
   BookingRecord,
   FormSubmissionPayload,
   PaymentOrderParams,
-  PaymentVerifyParams
+  PaymentVerifyParams,
+  AiChatParams,
+  AiChatResponse
 } from "./types";
 
 /**
@@ -22,11 +24,13 @@ export class TraveallyClient {
   private baseUrl: string;
   private domain: string;
   private organizationId?: string;
+  private aiServiceUrl: string;
   private token: string | null = null;
   private onTokenExpired?: () => void;
 
   constructor(config: TraveallyApiConfig = {}) {
     this.baseUrl = (config.baseUrl || "https://backend.traveally.com").replace(/\/+$/, "");
+    this.aiServiceUrl = (config.aiServiceUrl || "https://ai.traveally.com").replace(/\/+$/, "");
     this.domain = config.domain || (typeof window !== "undefined" ? window.location.hostname : "traveally.com");
     this.organizationId = config.organizationId;
     this.token = config.authToken || this.getStoredToken();
@@ -423,6 +427,108 @@ export class TraveallyClient {
           })
         });
       } catch {}
+    }
+  };
+
+  // ── 9. Traveally Conversational AI & Concierge API ───────────
+  public ai = {
+    /**
+     * Send conversational message or full history to Traveally AI service
+     */
+    chat: async (params: AiChatParams): Promise<AiChatResponse> => {
+      const payload = {
+        message: params.message,
+        messages: params.messages,
+        domain: params.domain || this.domain,
+        organization_id: params.organization_id || this.organizationId,
+        system_prompt: params.system_prompt,
+        model: params.model,
+        max_tokens: params.max_tokens,
+        temperature: params.temperature
+      };
+
+      // 1. First try direct AI microservice
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const res = await fetch(`${this.aiServiceUrl}/api/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "x-org-domain": payload.domain
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success) {
+            return data as AiChatResponse;
+          }
+        }
+      } catch {
+        // Fall back to backend AI endpoint
+      }
+
+      // 2. Fallback via backend.traveally.com
+      try {
+        const backendRes = await this.request<AiChatResponse>("/api/ai/chat", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        if (backendRes.success && backendRes.reply) {
+          return {
+            success: true,
+            reply: backendRes.reply,
+            model: backendRes.model || "gemini-2.0-flash",
+            provider: backendRes.provider || "google",
+            tokens_used: backendRes.tokens_used
+          };
+        }
+      } catch {}
+
+      return {
+        success: false,
+        reply: "I am temporarily unable to reach the AI concierge. Please check your connectivity or try again shortly.",
+        model: "offline-fallback",
+        provider: "traveally"
+      };
+    },
+
+    /**
+     * Generate customized itinerary based on destination and preferences
+     */
+    generateItinerary: async (params: {
+      destination: string;
+      days?: number;
+      travelers?: number;
+      budget?: string;
+      preferences?: string;
+    }): Promise<AiChatResponse> => {
+      const prompt = `Generate a detailed day-by-day travel itinerary for ${params.destination} (${params.days || 4} days, ${params.travelers || 2} travelers). Budget: ${params.budget || "moderate"}. Preferences: ${params.preferences || "sightseeing, local food, culture"}. Format with highlights, day breakdown, and insider tips.`;
+      return this.ai.chat({
+        message: prompt,
+        system_prompt: `You are an expert itinerary builder for ${this.domain}. Provide structured, engaging, and practical travel itineraries.`
+      });
+    },
+
+    /**
+     * Check AI service connectivity and health status
+     */
+    health: async (): Promise<{ status: string; uptime?: number; provider?: string }> => {
+      try {
+        const res = await fetch(`${this.aiServiceUrl}/api/health`);
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch {}
+      return { status: "offline" };
     }
   };
 }

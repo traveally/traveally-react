@@ -577,6 +577,7 @@ export const TraveallyChatbotProvider: React.FC<TraveallyChatbotProviderProps> =
           sessionId: sessionIdRef.current,
           domain: resolvedDomain,
           backendUrl: config.backendUrl,
+          aiServiceUrl: config.aiServiceUrl,
           customerToken: config.customerToken,
           traveler: travelerToSend,
           metadata,

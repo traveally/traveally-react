@@ -86,5 +86,11 @@ describe("TraveallyClient SDK", () => {
     it("exposes telemetry and event tracking", () => {
       expect(typeof client.analytics.trackEvent).toBe("function");
     });
+
+    it("exposes conversational AI concierge methods", () => {
+      expect(typeof client.ai.chat).toBe("function");
+      expect(typeof client.ai.generateItinerary).toBe("function");
+      expect(typeof client.ai.health).toBe("function");
+    });
   });
 });
